@@ -1,0 +1,97 @@
+import streamlit as st
+from streamlit_option_menu import option_menu
+from utils.excel import initialiser_base_donnees
+
+
+from pages.accueil import accueil
+from pages.magasin import magasin
+from pages.produits_finis import produit
+from pages.ventes import vente
+from pages.inventaires import inventaire
+from pages.rapports import rapport
+
+
+
+# ==========================
+# CONFIGURATION
+# ==========================
+
+st.set_page_config(
+    page_title="Gestion Restaurant",
+    page_icon="🍽️",
+    layout="wide" 
+)
+
+initialiser_base_donnees()
+
+# ==========================
+# MENU
+# ==========================
+
+with st.sidebar:
+
+    st.title("🍽️ Restaurant")
+
+    menu = option_menu(
+        menu_title="Navigation",
+
+        options=[
+            "Accueil",
+            "Magasin",
+            "Produits finis",
+            "Ventes",
+            "Inventaire",
+            "Rapports"
+        ],
+
+        icons=[
+            "house",
+            "box-seam",
+            "egg-fried",
+            "cash-coin",
+            "clipboard-check",
+            "graph-up"
+        ],
+
+        default_index=0
+    )
+
+
+# ==========================
+# ROUTAGE DES PAGES
+# ==========================
+
+if menu == "Accueil":
+
+
+    accueil()
+
+
+elif menu == "Magasin":
+
+    
+    magasin()
+
+
+elif menu == "Produits finis":
+
+    
+    produit()
+
+
+elif menu == "Ventes":
+
+    
+    vente()
+
+
+elif menu == "Inventaire":
+
+    
+    inventaire()
+
+
+elif menu == "Rapports":
+
+    
+    rapport()
