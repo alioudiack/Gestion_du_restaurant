@@ -292,6 +292,23 @@ def magasin():
         
         if "Statut" in df_affichage.columns:
             df_affichage["Statut"] = df_affichage["Statut"].fillna("Actif").astype(str)
+
+        # ============================
+        # Vérification des options Selectbox
+        # ============================
+        
+        df_affichage["Catégorie"] = df_affichage["Catégorie"].apply(
+            lambda x: x if x in CATEGORIES else CATEGORIES[0]
+        )
+        
+        df_affichage["Unité"] = df_affichage["Unité"].apply(
+            lambda x: x if x in UNITES else UNITES[0]
+        )
+        
+        df_affichage["Statut"] = df_affichage["Statut"].apply(
+            lambda x: x if x in ["Actif", "Inactif"] else "Actif"
+        )
+        
         
         
         if recherche:
