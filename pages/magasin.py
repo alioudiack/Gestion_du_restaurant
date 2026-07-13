@@ -263,151 +263,33 @@ def magasin():
             if st.button("➕ Nouvelle matière", use_container_width=True):
                 modal_ajouter_matiere(df_matieres)
 
-                df_affichage = df_matieres.copy()
-
-        # ============================
-        # Nettoyage et correction types
-        # compatible Streamlit Cloud
-        # ============================
-
-        if "ID" in df_affichage.columns:
-            df_affichage["ID"] = df_affichage["ID"].astype(str)
-
-        if "Code" in df_affichage.columns:
-            df_affichage["Code"] = df_affichage["Code"].astype(str)
-
-        if "Désignation" in df_affichage.columns:
-            df_affichage["Désignation"] = (
-                df_affichage["Désignation"]
-                .fillna("")
-                .astype(str)
-            )
-
-        if "Catégorie" in df_affichage.columns:
-            df_affichage["Catégorie"] = (
-                df_affichage["Catégorie"]
-                .fillna(CATEGORIES[0])
-                .astype(str)
-            )
-
-        if "Unité" in df_affichage.columns:
-            df_affichage["Unité"] = (
-                df_affichage["Unité"]
-                .fillna(UNITES[0])
-                .astype(str)
-            )
-
-        if "Seuil" in df_affichage.columns:
-            df_affichage["Seuil"] = pd.to_numeric(
-                df_affichage["Seuil"]
-                .astype(str)
-                .str.replace(",", "."),
-                errors="coerce"
-            ).fillna(0).astype(float)
-
-        if "Statut" in df_affichage.columns:
-            df_affichage["Statut"] = (
-                df_affichage["Statut"]
-                .fillna("Actif")
-                .astype(str)
-            )
-
-
-        # ============================
-        # Contrôle des valeurs Selectbox
-        # ============================
-
-        df_affichage["Catégorie"] = df_affichage["Catégorie"].apply(
-            lambda x: x if x in CATEGORIES else CATEGORIES[0]
-        )
-
-        df_affichage["Unité"] = df_affichage["Unité"].apply(
-            lambda x: x if x in UNITES else UNITES[0]
-        )
-
-        df_affichage["Statut"] = df_affichage["Statut"].apply(
-            lambda x: x if x in ["Actif", "Inactif"] else "Actif"
-        )
-
-
-        # ============================
-        # Recherche
-        # ============================
-
+        df_affichage = df_matieres.copy()
         if recherche:
             df_affichage = df_affichage[
-                df_affichage["Désignation"]
-                .str.contains(recherche, case=False, na=False)
-                |
-                df_affichage["Code"]
-                .str.contains(recherche, case=False, na=False)
+                df_affichage['Désignation'].str.contains(recherche, case=False, na=False) |
+                df_affichage['Code'].str.contains(recherche, case=False, na=False)
             ]
-
-
-        # ============================
-        # Colonne sélection
-        # ============================
 
         if "Sélection" not in df_affichage.columns:
             df_affichage.insert(0, "Sélection", False)
-
-        df_affichage["Sélection"] = (
-            df_affichage["Sélection"]
-            .astype(bool)
-        )
-
-
+        
         st.write("---")
-
-
-        # ============================
-        # Data Editor
-        # ============================
-
+        
         editeur_reponse = st.data_editor(
             df_affichage,
             hide_index=True,
-
             column_config={
-
-                "Sélection": st.column_config.CheckboxColumn(
-                    "Sélectionner"
-                ),
-
+                "Sélection": st.column_config.CheckboxColumn("Sélectionner", default=False),
                 "ID": None,
-
-                "Code": st.column_config.TextColumn(
-                    "Code"
-                ),
-
-                "Désignation": st.column_config.TextColumn(
-                    "Désignation"
-                ),
-
-                "Catégorie": st.column_config.SelectboxColumn(
-                    "Catégorie",
-                    options=CATEGORIES
-                ),
-
-                "Unité": st.column_config.SelectboxColumn(
-                    "Unité",
-                    options=UNITES
-                ),
-
-                "Seuil": st.column_config.NumberColumn(
-                    "Seuil Alerte"
-                ),
-
-                "Statut": st.column_config.SelectboxColumn(
-                    "Statut",
-                    options=["Actif", "Inactif"]
-                )
+                "Code": st.column_config.TextColumn("Code", disabled=True),
+                "Désignation": st.column_config.TextColumn("Désignation"),
+                "Catégorie": st.column_config.SelectboxColumn("Catégorie", options=CATEGORIES),
+                "Unité": st.column_config.SelectboxColumn("Unité", options=UNITES),
+                "Seuil": st.column_config.NumberColumn("Seuil Alerte"),
+                "Statut": st.column_config.SelectboxColumn("Statut", options=["Actif", "Inactif"])
             },
-
             disabled=["Code"],
-
             use_container_width=True,
-
             key="editeur_matieres_unique"
         )
 
