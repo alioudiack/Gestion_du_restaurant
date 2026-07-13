@@ -2,8 +2,8 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 
-from utils.excel_produit import charger_donnees_production, sauvegarder_donnees_production
-from utils.excel import charger_feuille  # Récupération de la fiche magasin d'origine
+from gestion.utils.excel_produit import charger_donnees_production, sauvegarder_donnees_production
+from gestion.utils.excel import charger_feuille  # Récupération de la fiche magasin d'origine
 
 
 @st.dialog("🍳 Déclarer une Fabrication (Cuisine)")
