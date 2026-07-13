@@ -3,8 +3,8 @@ import pandas as pd
 import plotly.express as px  # Installé par défaut avec Streamlit pour des graphiques fluides
 from datetime import datetime, timedelta
 
-from utils.excel_produit import charger_donnees_production
-from utils.excel import charger_feuille
+from gestion.utils.excel_produit import charger_donnees_production
+from gestion.utils.excel import charger_feuille
 
 def afficher():
     st.title("📈 Rapport d'Activité & Statistiques")
