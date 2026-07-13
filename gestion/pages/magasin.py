@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
-from utils.excel import charger_feuille, sauvegarder_feuille
+from gestion.utils.excel import charger_feuille, sauvegarder_feuille
 
 # Définition des listes de contrôle strictes (Catégories et Unités)
 CATEGORIES = ["Alimentaire", "Boisson", "Épices", "Laitier", "Viande", "Volaille", "Poisson", "Légume", "Fruit", "Emballage", "Produit d'entretien", "Autre"]
