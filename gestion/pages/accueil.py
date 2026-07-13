@@ -3,8 +3,8 @@ import os
 import pandas as pd
 from datetime import datetime
 
-from utils.excel_produit import charger_donnees_production
-from utils.excel import charger_feuille
+from gestion.utils.excel_produit import charger_donnees_production
+from gestion.utils.excel import charger_feuille
 
 
 def afficher():
