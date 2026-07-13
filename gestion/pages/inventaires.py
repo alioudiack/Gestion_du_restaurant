@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 
-from utils.excel import charger_feuille, sauvegarder_feuille
+from gestion.utils.excel import charger_feuille, sauvegarder_feuille
 
 @st.dialog("🔄 Ajuster le Stock / Déclarer une Perte")
 def modal_ajustement_stock(df_matieres, col_qte_trouvee):
