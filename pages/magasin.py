@@ -320,6 +320,8 @@ def magasin():
         if "Sélection" not in df_affichage.columns:
             df_affichage.insert(0, "Sélection", False)
         
+        df_affichage["Sélection"] = df_affichage["Sélection"].astype(bool)
+        
         st.write("---")
         
         editeur_reponse = st.data_editor(
