@@ -1,11 +1,15 @@
+Python
 import os
 import sys
 
 # Ajoute le dossier racine du projet au chemin de recherche de Python
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+# Le reste de vos imports...
 import streamlit as st
-from streamlit_option_menu import option_menu
 from gestion.utils.excel import initialiser_base_donnees
+from streamlit_option_menu import option_menu
+
 
 
 from gestion.pages.accueil import accueil
