@@ -3,12 +3,12 @@ from streamlit_option_menu import option_menu
 from utils.excel import initialiser_base_donnees
 
 
-from pages.accueil import accueil
-from pages.magasin import magasin
-from pages.produits_finis import produit
-from pages.ventes import vente
-from pages.inventaires import inventaire
-from pages.rapports import rapport
+from gestion.pages.accueil import accueil
+from gestion.pages.magasin import magasin
+from gestion.pages.produits_finis import produit
+from gestion.pages.ventes import vente
+from gestion.pages.inventaires import inventaire
+from gestion.pages.rapports import rapport
 
 
 
