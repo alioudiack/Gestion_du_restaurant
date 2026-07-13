@@ -1,14 +1,24 @@
+from pathlib import Path
 import os
 import pandas as pd
 
-DB_PATH = "data/matieres.xlsx"
+# Calcul dynamique de la racine du projet
+# __file__ est 'gestion/utils/excel.py'
+# .parent est 'gestion/utils'
+# .parent.parent remonte à la racine 'gestion'
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Définition des chemins absolus sécurisés
+DOSSIER_DATA = BASE_DIR / "data"
+DB_PATH = DOSSIER_DATA / "matieres.xlsx"
 
 def initialiser_base_donnees():
     """Crée le fichier Excel et les 4 feuilles si elles n'existent pas."""
-    if not os.path.exists("data"):
-        os.makedirs("data")
+    # Création du dossier 'data' s'il n'existe pas
+    if not DOSSIER_DATA.exists():
+        DOSSIER_DATA.mkdir(parents=True, exist_ok=True)
         
-    if not os.path.exists(DB_PATH):
+    if not DB_PATH.exists():
         with pd.ExcelWriter(DB_PATH, engine="openpyxl") as writer:
             # 1. Liste_Matieres
             df_matieres = pd.DataFrame(columns=["ID", "Code", "Désignation", "Catégorie", "Unité", "Seuil", "Statut"])
@@ -32,8 +42,7 @@ def charger_feuille(nom_feuille):
         return pd.read_excel(DB_PATH, sheet_name=nom_feuille)
     except Exception as e:
         # Si le fichier est corrompu (BadZipFile, etc.), on le supprime et on le recrée
-        import os
-        if os.path.exists(DB_PATH):
+        if DB_PATH.exists():
             try:
                 os.remove(DB_PATH)
                 initialiser_base_donnees()
