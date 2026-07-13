@@ -1,6 +1,6 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
-from utils.excel import initialiser_base_donnees
+from gestion.utils.excel import initialiser_base_donnees
 
 
 from gestion.pages.accueil import accueil
