@@ -1,63 +1,58 @@
+from pathlib import Path
 import os
 import pandas as pd
 
-# Base de données Excel globale pour la partie cuisine et comptoir de vente
-FICHIER_EXCEL = "data/Produits.xlsx"
+# Calcul dynamique de la racine du projet
+BASE_DIR = Path(__file__).resolve().parent.parent
 
-def initialiser_onglets_production():
-    """S'assure que toutes les feuilles nécessaires existent avec leurs colonnes respectives."""
-    structures_initiales = {
-        "Liste_Matieres": pd.DataFrame(columns=["Code", "Désignation", "Unité", "Statut"]), # Sécurité d'alignement
-        "Liste_Produits": pd.DataFrame(columns=["ID", "Produit", "Catégorie", "Prix vente"]),
-        "Recettes": pd.DataFrame(columns=["ID", "Produit", "Code Matière", "Matière", "Quantité", "Unité"]),
-        "Fabrication": pd.DataFrame(columns=["ID", "Date", "Produit", "Quantité"]),
-        "Ventes": pd.DataFrame(columns=["ID", "Date", "Produit", "Quantité", "Prix Unitaire", "Total", "Mode Paiement"])
-    }
-    
-    if not os.path.exists(FICHIER_EXCEL):
-        # Si le fichier n'existe pas du tout, on crée tout à vide
-        with pd.ExcelWriter(FICHIER_EXCEL, engine="openpyxl") as writer:
-            for nom_feuille, df in structures_initiales.items():
-                df.to_excel(writer, sheet_name=nom_feuille, index=False)
-        return
+# Définition des chemins absolus sécurisés
+DOSSIER_DATA = BASE_DIR / "data"
+DB_PRODUITS_PATH = DOSSIER_DATA / "Produits.xlsx"
 
-    # Si le fichier existe, on vérifie onglet par onglet s'il manque quelque chose
+def initialiser_base_produits():
+    """Crée le fichier Excel des produits finis et ses feuilles si elles n'existent pas."""
+    # Création du dossier 'data' s'il n'existe pas
+    if not DOSSIER_DATA.exists():
+        DOSSIER_DATA.mkdir(parents=True, exist_ok=True)
+        
+    if not DB_PRODUITS_PATH.exists():
+        with pd.ExcelWriter(DB_PRODUITS_PATH, engine="openpyxl") as writer:
+            # 1. Liste_Produits
+            df_produits = pd.DataFrame(columns=["ID", "Code", "Désignation", "Catégorie", "Prix_Vente", "Statut"])
+            df_produits.to_excel(writer, sheet_name="Liste_Produits", index=False)
+            
+            # 2. Ventes
+            df_ventes = pd.DataFrame(columns=["ID", "Date", "Code", "Désignation", "Quantité", "Prix_Unitaire", "Montant", "Serveur"])
+            df_ventes.to_excel(writer, sheet_name="Ventes", index=False)
+            
+            # 3. Stock_Produits
+            df_stock_p = pd.DataFrame(columns=["Code", "Désignation", "Initial", "Ventes", "Disponible"])
+            df_stock_p.to_excel(writer, sheet_name="Stock_Produits", index=False)
+
+def charger_feuille_produit(nom_feuille):
+    initialiser_base_produits()
     try:
-        onglets_existants = pd.ExcelFile(FICHIER_EXCEL).sheet_names
-    except Exception:
-        onglets_existants = []
-
-    for nom_feuille, df_initial in structures_initiales.items():
-        if nom_feuille not in onglets_existants:
-            # On ajoute l'onglet manquant sans écraser les autres
-            with pd.ExcelWriter(FICHIER_EXCEL, engine="openpyxl", mode="a", if_sheet_exists="replace") as writer:
-                df_initial.to_excel(writer, sheet_name=nom_feuille, index=False)
-
-
-def charger_donnees_production(nom_feuille):
-    """Charge une feuille spécifique en garantissant sa structure en cas d'absence."""
-    initialiser_onglets_production()
-    try:
-        df = pd.read_excel(FICHIER_EXCEL, sheet_name=nom_feuille)
-        df = df.dropna(how="all")
-        return df
-    except Exception:
+        return pd.read_excel(DB_PRODUITS_PATH, sheet_name=nom_feuille)
+    except Exception as e:
+        # Si le fichier est corrompu, réinitialisation complète de sécurité
+        if DB_PRODUITS_PATH.exists():
+            try:
+                os.remove(DB_PRODUITS_PATH)
+                initialiser_base_produits()
+                return pd.read_excel(DB_PRODUITS_PATH, sheet_name=nom_feuille)
+            except Exception:
+                pass
+        
+        # Structure de secours si tout échoue
         structures = {
-            "Liste_Produits": pd.DataFrame(columns=["ID", "Produit", "Catégorie", "Prix vente"]),
-            "Recettes": pd.DataFrame(columns=["ID", "Produit", "Code Matière", "Matière", "Quantité", "Unité"]),
-            "Fabrication": pd.DataFrame(columns=["ID", "Date", "Produit", "Quantité"]),
-            "Ventes": pd.DataFrame(columns=["ID", "Date", "Produit", "Quantité", "Prix Unitaire", "Total", "Mode Paiement"])
+            "Liste_Produits": pd.DataFrame(columns=["ID", "Code", "Désignation", "Catégorie", "Prix_Vente", "Statut"]),
+            "Ventes": pd.DataFrame(columns=["ID", "Date", "Code", "Désignation", "Quantité", "Prix_Unitaire", "Montant", "Serveur"]),
+            "Stock_Produits": pd.DataFrame(columns=["Code", "Désignation", "Initial", "Ventes", "Disponible"])
         }
         return structures.get(nom_feuille, pd.DataFrame())
 
-
-def sauvegarder_donnees_production(df, nom_feuille):
-    """Sauvegarde les données dans l'onglet spécifié sans altérer le reste du fichier Excel."""
-    initialiser_onglets_production()
-    try:
-        with pd.ExcelWriter(FICHIER_EXCEL, engine="openpyxl", mode="a", if_sheet_exists="replace") as writer:
-            df.to_excel(writer, sheet_name=nom_feuille, index=False)
-        return True
-    except Exception as e:
-        print(f"Erreur lors de la sauvegarde de l'onglet {nom_feuille} : {e}")
-        return False
+def sauvegarder_feuille_produit(df, nom_feuille):
+    initialiser_base_produits()
+    # Met à jour la feuille ciblée sans altérer les autres structures du classeur Excel
+    with pd.ExcelWriter(DB_PRODUITS_PATH, engine="openpyxl", mode="a", if_sheet_exists="replace") as writer:
+        df.to_excel(writer, sheet_name=nom_feuille, index=False)
