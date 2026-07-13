@@ -1,0 +1,14 @@
+# Fichiers système et caches Python
+__pycache__/
+*.pyc
+.streamlit/
+.ipynb_checkpoints/
+
+# Environnement virtuel (si vous en utilisez un en local)
+.venv/
+venv/
+env/
+
+# ATTENTION : Si vous voulez que l'application lise vos fichiers Excel sur le serveur,
+# ne masquez PAS le dossier data. Assurez-vous que les lignes suivantes ne s'y trouvent pas :
+# gestion/data/  <-- NE PAS METTRE ÇA si vous voulez que vos Excel soient visibles sur GitHub
